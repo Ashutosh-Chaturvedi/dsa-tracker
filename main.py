@@ -6,7 +6,7 @@ import models
 
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
+app = FastAPI(title="DSA Tracker")
 
 class Problem(BaseModel):
     title: str
@@ -21,6 +21,55 @@ class ProblemUpdate(BaseModel):
     difficulty: Optional[str] = None
     topics: Optional[List[str]] = None
     notes: Optional[str] = None
+    
+@app.get("/stats")
+def stats():
+    db = SessionLocal()
+    query = db.query(models.Problem)
+    
+    problems = query.all()
+    counts = len(problems)
+    
+    easy_problems = query.filter(models.Problem.difficulty == "easy").all()
+    easy_problems_count = len(easy_problems)
+    
+    medium_problems = query.filter(models.Problem.difficulty == "medium").all()
+    medium_problems_count = len(medium_problems)
+    
+    hard_problems = query.filter(models.Problem.difficulty == "hard").all()
+    hard_problems_count = len(hard_problems)
+    
+    leetcode_problems = query.filter(models.Problem.platform == "leetcode").all()
+    leetcode_problems_count = len(leetcode_problems)
+    
+    hackerrank_problems = query.filter(models.Problem.platform == "hackerrank").all()
+    hackerrank_problems_count = len(hackerrank_problems)
+    
+    other_platform_problems = query.filter(models.Problem.platform != "leetcode" or models.Problem.platform != "hackerrank").all()
+    other_platform_problems_count = len(other_platform_problems)
+    
+    db.close()
+    
+    return {
+        "status": "success",
+        "total_problems_count" : counts, 
+        "easy_problems_count" : easy_problems_count, 
+        "medium_problems_count" : medium_problems_count,
+        "hard_problems_count" : hard_problems_count,
+        "problems_based_on_difficulty":{
+            "easy": easy_problems,
+            "medium": medium_problems,
+            "hard": hard_problems
+        },
+        "leetcode_problems_count" : leetcode_problems_count,
+        "hackerrank_problems_count" : hackerrank_problems_count,
+        "other_platform_count" : other_platform_problems_count,
+        "problems_based_on_platform":{
+            "leetcode": leetcode_problems,
+            "hackerrank": hackerrank_problems,
+            "other": other_platform_problems
+        }
+    }
 
 @app.post('/problems')
 def add_problem(problem: Problem):
