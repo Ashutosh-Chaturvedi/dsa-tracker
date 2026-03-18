@@ -11,5 +11,5 @@ class Problem(Base):
     difficulty = Column(String)
     topics = Column(String)
     notes = Column(String)
-    # created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now())
 

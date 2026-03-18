@@ -101,7 +101,9 @@ def get_by_id(problem_id: int):
             "platform": p.platform,
             "difficulty": p.difficulty,
             "topics": p.topics.split(",") if p.topics else [],
-            "notes": p.notes
+            "notes": p.notes,
+            "date" : p.created_at.date(),
+            "time" : p.created_at.strftime("%H:%M:%S")
         }
     }
     
@@ -174,7 +176,13 @@ def get_problems(difficulty: Optional[str] = None, topic: Optional[str] = None):
             "difficulty": p.difficulty,
             "topics": p.topics.split(",") if p.topics else [],
             "notes": p.notes,
-            # "created_at": p.created_at
+            "date" : p.created_at.date(),
+            "time" : p.created_at.strftime("%H:%M:%S")
         })
         
     return {"status": "success", "data": result}
+
+@app.get("/")
+def health():
+    return {"status": "success",
+            "service": "dsa-tracker"}
