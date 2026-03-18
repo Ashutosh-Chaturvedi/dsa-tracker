@@ -7,20 +7,20 @@ Built with **FastAPI + SQLite + SQLAlchemy**, this project helps you log, manage
 
 ## 🔗 Live Demo
 
-👉 https://your-app.onrender.com/docs
+https://dsa-tracker-q4iy.onrender.com/docs
 
 ---
 
 ## 🧠 Features
 
-* ✅ Add solved problems
-* ✅ View all problems
-* ✅ Filter by difficulty and topic
-* ✅ Update problems (PUT & PATCH)
-* ✅ Persistent storage using SQLite
-* ✅ Clean API responses
-* ✅ Stats endpoint (counts by difficulty & platform)
-* ✅ Deployed and accessible online
+*  Add solved problems
+*  View all problems
+*  Filter by difficulty and topic
+*  Update problems (PUT & PATCH)
+*  Persistent storage using SQLite
+*  Clean API responses
+*  Stats endpoint (counts by difficulty & platform)
+*  Deployed and accessible online
 
 ---
 
@@ -181,7 +181,7 @@ http://127.0.0.1:8000/docs
 
 ---
 
-## 🚧 Future Improvements
+##  Future Improvements
 
 * PostgreSQL integration
 * Authentication (JWT)
@@ -191,7 +191,7 @@ http://127.0.0.1:8000/docs
 
 ---
 
-## 💡 What I Learned
+##  What I Learned
 
 * Designing REST APIs
 * Using SQLAlchemy ORM
@@ -202,7 +202,7 @@ http://127.0.0.1:8000/docs
 
 ---
 
-## 🏁 Conclusion
+##  Conclusion
 
 This project demonstrates the ability to build, structure, and deploy a complete backend service with real-world features.
 
