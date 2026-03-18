@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, DateTime
 from database import Base
+from datetime import datetime
 
 class Problem(Base):
     __tablename__ = "problems"
@@ -10,4 +11,5 @@ class Problem(Base):
     difficulty = Column(String)
     topics = Column(String)
     notes = Column(String)
+    # created_at = Column(DateTime, default=datetime.utcnow)
 

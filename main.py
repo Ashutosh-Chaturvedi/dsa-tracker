@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 from database import engine, SessionLocal
 import models
+from sqlalchemy import func
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -29,45 +30,37 @@ def stats():
     
     problems = query.all()
     counts = len(problems)
+
+    easy_problems_count = db.query(func.count()).filter(func.lower(models.Problem.difficulty) == "easy").scalar()
+ 
+    medium_problems_count = db.query(func.count()).filter(func.lower(models.Problem.difficulty) == "medium").scalar()
+
+    hard_problems_count = db.query(func.count()).filter(func.lower(models.Problem.difficulty) == "hard").scalar()
+ 
+    leetcode_problems_count = db.query(func.count()).filter(func.lower(models.Problem.platform) == "leetcode").scalar()
     
-    easy_problems = query.filter(models.Problem.difficulty == "easy").all()
-    easy_problems_count = len(easy_problems)
-    
-    medium_problems = query.filter(models.Problem.difficulty == "medium").all()
-    medium_problems_count = len(medium_problems)
-    
-    hard_problems = query.filter(models.Problem.difficulty == "hard").all()
-    hard_problems_count = len(hard_problems)
-    
-    leetcode_problems = query.filter(models.Problem.platform == "leetcode").all()
-    leetcode_problems_count = len(leetcode_problems)
-    
-    hackerrank_problems = query.filter(models.Problem.platform == "hackerrank").all()
-    hackerrank_problems_count = len(hackerrank_problems)
-    
-    other_platform_problems = query.filter(models.Problem.platform != "leetcode" or models.Problem.platform != "hackerrank").all()
-    other_platform_problems_count = len(other_platform_problems)
+    hackerrank_problems_count = db.query(func.count()).filter(func.lower(models.Problem.difficulty) == "hackerrank").scalar()
+
+    other_count = db.query(func.count()).filter(
+        ~func.lower(models.Problem.platform).in_(["leetcode", "hackerrank"])
+    ).scalar()
     
     db.close()
     
     return {
         "status": "success",
-        "total_problems_count" : counts, 
-        "easy_problems_count" : easy_problems_count, 
-        "medium_problems_count" : medium_problems_count,
-        "hard_problems_count" : hard_problems_count,
-        "problems_based_on_difficulty":{
-            "easy": easy_problems,
-            "medium": medium_problems,
-            "hard": hard_problems
-        },
-        "leetcode_problems_count" : leetcode_problems_count,
-        "hackerrank_problems_count" : hackerrank_problems_count,
-        "other_platform_count" : other_platform_problems_count,
-        "problems_based_on_platform":{
-            "leetcode": leetcode_problems,
-            "hackerrank": hackerrank_problems,
-            "other": other_platform_problems
+        "data": {
+            "total" : counts,
+            "difficulty": {
+                "easy": easy_problems_count,
+                "medium": medium_problems_count,
+                "hard": hard_problems_count
+            },
+            "platform": {
+                "leetcode": leetcode_problems_count,
+                "hackerrank": hackerrank_problems_count,
+                "others": other_count 
+            }
         }
     }
 
@@ -163,10 +156,10 @@ def get_problems(difficulty: Optional[str] = None, topic: Optional[str] = None):
     query = db.query(models.Problem)
     
     if difficulty is not None: 
-        query = query.filter(models.Problem.difficulty == difficulty)
+        query = query.filter(func.lower(models.Problem.difficulty) == func.lower(difficulty))
         
     if topic is not None: 
-        query = query.filter(models.Problem.topics.contains(topic))
+        query = query.filter(func.lower(models.Problem.topics).contains(func.lower(topic)))
         
     problems = query.all()
     db.close()
@@ -180,7 +173,8 @@ def get_problems(difficulty: Optional[str] = None, topic: Optional[str] = None):
             "platform": p.platform,
             "difficulty": p.difficulty,
             "topics": p.topics.split(",") if p.topics else [],
-            "notes": p.notes
+            "notes": p.notes,
+            # "created_at": p.created_at
         })
         
     return {"status": "success", "data": result}
